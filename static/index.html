@@ -1,33 +1,67 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="cupcake">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌸 Pastel PhotoBooth 🌸</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>✨ Tatine Photobooth ✨</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-base-200 min-h-screen flex flex-col items-center justify-center p-4">
+<body>
+    <div class="container">
+        <header>
+            <h1>🌸 Tatine Photobooth</h1>
+            <p class="subtitle">Capture your cute moments! 📸</p>
+        </header>
 
-    <div class="card bg-base-100 shadow-xl max-w-md w-full border-4 border-primary/20">
-        <div class="card-body items-center text-center">
-            <h2 class="card-title text-2xl text-primary font-bold mb-4">✨ Smile & Sparkle ✨</h2>
-            
-            <!-- Webcam Stream Box -->
-            <div class="relative rounded-2xl overflow-hidden border-4 border-secondary shadow-inner bg-black aspect-video w-full">
-                <video id="webcam" autoplay playsinline class="w-full h-full object-cover scale-x-[-1]"></video>
+        <div class="photobooth">
+            <div class="camera-section">
+                <div class="video-container">
+                    <video id="video" autoplay playsinline></video>
+                    <div class="camera-overlay">
+                        <div class="corner tl"></div>
+                        <div class="corner tr"></div>
+                        <div class="corner bl"></div>
+                        <div class="corner br"></div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button id="captureBtn" class="capture-btn">
+                        <span class="icon">📸</span> Capture
+                    </button>
+                    <button id="switchCamera" class="switch-btn">
+                        <span class="icon">🔄</span> Switch
+                    </button>
+                    <button id="galleryBtn" class="gallery-btn">
+                        <span class="icon">🖼️</span> Gallery
+                    </button>
+                </div>
             </div>
 
-            <!-- Action Controls -->
-            <div class="card-actions justify-center mt-6 w-full">
-                <button id="capture-btn" class="btn btn-primary btn-wide rounded-full text-white font-bold shadow-md">📸 Take Photo</button>
+            <div class="preview-section" id="previewSection" style="display: none;">
+                <h2>🎀 Your Photo</h2>
+                <div class="preview-container">
+                    <img id="capturedImage" alt="Captured photo">
+                </div>
+                <div class="preview-controls">
+                    <button id="retakeBtn" class="retake-btn">🔄 Retake</button>
+                    <button id="saveBtn" class="save-btn">💾 Save</button>
+                    <button id="shareBtn" class="share-btn">📤 Share</button>
+                </div>
+            </div>
+
+            <div class="gallery-section" id="gallerySection" style="display: none;">
+                <h2>🌟 Photo Gallery</h2>
+                <div id="galleryGrid" class="gallery-grid"></div>
+                <button id="closeGalleryBtn" class="close-btn">✖ Close</button>
             </div>
         </div>
+
+        <footer>
+            <p>Made with ❤️ by Tatine Photobooth</p>
+        </footer>
     </div>
 
-    <!-- Hidden Canvas for capturing image data -->
-    <canvas id="canvas" class="hidden"></canvas>
-
-    <script src="/static/app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
