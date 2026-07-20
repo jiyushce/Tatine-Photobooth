@@ -2,12 +2,19 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from PIL import Image, ImageDraw, ImageFont
 import os
 import uuid
 from datetime import datetime
 import shutil
 from pathlib import Path
+
+# Try importing PIL with error handling
+try:
+    from PIL import Image, ImageDraw
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
+    print("PIL not installed. Photo effects will be disabled.")
 
 app = FastAPI(title="Tatine Photobooth")
 
@@ -45,8 +52,12 @@ async def capture_photo(file: UploadFile = File(...)):
         with open(filepath, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         
-        # Add cute overlay effects
-        add_cute_overlay(str(filepath))
+        # Add cute overlay effects if PIL is available
+        if PIL_AVAILABLE:
+            try:
+                add_cute_overlay(str(filepath))
+            except Exception as e:
+                print(f"Error adding overlay: {e}")
         
         # Return the photo URL
         photo_url = f"/photos/{filename}"
@@ -66,7 +77,7 @@ def add_cute_overlay(image_path):
         draw = ImageDraw.Draw(img)
         
         # Add a cute border
-        border_color = "#FFB6C1"  # Light pink
+        border_color = "#FFB6C1"
         border_width = 20
         draw.rectangle(
             [(0, 0), (img.width, img.height)],
@@ -81,9 +92,6 @@ def add_cute_overlay(image_path):
                 [x, y, x + corner_radius * 2, y + corner_radius * 2],
                 start=0, end=90, fill="#FF69B4", width=10
             )
-        
-        # Add text overlay (optional)
-        # draw.text((20, 20), "✨ Tatine ✨", fill="#FF1493")
         
         img.save(image_path, quality=95)
     except Exception as e:
@@ -113,4 +121,4 @@ async def delete_photo(filename: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)
