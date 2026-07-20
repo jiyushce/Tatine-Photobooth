@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>✨ Tatine Photobooth ✨</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/static/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+/<body>
     <div class="container">
         <header>
             <h1>🌸 Tatine Photobooth</h1>
@@ -35,7 +35,11 @@
                     <button id="galleryBtn" class="gallery-btn">
                         <span class="icon">🖼️</span> Gallery
                     </button>
+                    <button id="mirrorBtn" class="mirror-btn">
+                        <span class="icon">🪞</span> Mirror
+                    </button>
                 </div>
+                <div id="cameraStatus" class="camera-status">Camera Ready 📷</div>
             </div>
 
             <div class="preview-section" id="previewSection" style="display: none;">
@@ -62,6 +66,6 @@
         </footer>
     </div>
 
-    <script src="app.js"></script>
+    <script src="/static/app.js"></script>
 </body>
 </html>

@@ -69,7 +69,6 @@ h1 {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scaleX(-1);
 }
 
 .camera-overlay {
@@ -95,19 +94,19 @@ h1 {
 
 .controls {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     margin-top: 20px;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 button {
-    padding: 12px 25px;
+    padding: 12px 20px;
     border: none;
     border-radius: 50px;
     font-family: 'Quicksand', sans-serif;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -118,8 +117,8 @@ button {
 .capture-btn {
     background: linear-gradient(135deg, #e91e63, #ff6b9d);
     color: white;
-    font-size: 1.2rem;
-    padding: 15px 35px;
+    font-size: 1.1rem;
+    padding: 15px 30px;
     box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
 }
 
@@ -128,15 +127,28 @@ button {
     box-shadow: 0 6px 25px rgba(233, 30, 99, 0.4);
 }
 
-.switch-btn, .gallery-btn {
+.switch-btn, .gallery-btn, .mirror-btn {
     background: white;
     color: #e91e63;
     border: 2px solid #ff6b9d;
 }
 
-.switch-btn:hover, .gallery-btn:hover {
+.switch-btn:hover, .gallery-btn:hover, .mirror-btn:hover {
     background: #ffeef2;
     transform: scale(1.05);
+}
+
+.mirror-btn.active {
+    background: #e91e63;
+    color: white;
+}
+
+.camera-status {
+    text-align: center;
+    margin-top: 10px;
+    color: #ad1457;
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
 .preview-section, .gallery-section {
@@ -144,6 +156,12 @@ button {
     border-radius: 20px;
     padding: 20px;
     box-shadow: 0 8px 25px rgba(233, 30, 99, 0.1);
+}
+
+.preview-section h2, .gallery-section h2 {
+    color: #e91e63;
+    text-align: center;
+    margin-bottom: 15px;
 }
 
 .preview-container {

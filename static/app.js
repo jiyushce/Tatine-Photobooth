@@ -4,13 +4,17 @@ class TatinePhotobooth {
         this.captureBtn = document.getElementById('captureBtn');
         this.switchBtn = document.getElementById('switchCamera');
         this.galleryBtn = document.getElementById('galleryBtn');
+        this.mirrorBtn = document.getElementById('mirrorBtn');
         this.previewSection = document.getElementById('previewSection');
         this.gallerySection = document.getElementById('gallerySection');
         this.capturedImage = document.getElementById('capturedImage');
         this.galleryGrid = document.getElementById('galleryGrid');
+        this.cameraStatus = document.getElementById('cameraStatus');
         this.stream = null;
         this.currentPhoto = null;
+        this.currentPhotoUrl = null;
         this.usingFrontCamera = true;
+        this.isMirrored = true; // Start with mirror on for selfie view
         
         this.init();
     }
@@ -19,8 +23,12 @@ class TatinePhotobooth {
         try {
             await this.startCamera();
             this.setupEventListeners();
+            this.cameraStatus.textContent = '✅ Camera Ready!';
+            this.cameraStatus.style.color = '#4caf50';
         } catch (error) {
             console.error('Error initializing photobooth:', error);
+            this.cameraStatus.textContent = '❌ Camera access denied. Please allow camera permissions.';
+            this.cameraStatus.style.color = '#f44336';
             alert('Please allow camera access to use the photobooth!');
         }
     }
@@ -45,11 +53,20 @@ class TatinePhotobooth {
             this.video.srcObject = this.stream;
             await this.video.play();
             
-            // Flip video horizontally for mirror effect
-            this.video.style.transform = 'scaleX(-1)';
+            // Apply mirror effect
+            this.applyMirrorEffect();
+            
         } catch (error) {
             console.error('Camera error:', error);
             throw error;
+        }
+    }
+    
+    applyMirrorEffect() {
+        if (this.isMirrored) {
+            this.video.style.transform = 'scaleX(-1)';
+        } else {
+            this.video.style.transform = 'scaleX(1)';
         }
     }
     
@@ -57,23 +74,37 @@ class TatinePhotobooth {
         this.captureBtn.addEventListener('click', () => this.capturePhoto());
         this.switchBtn.addEventListener('click', () => this.switchCamera());
         this.galleryBtn.addEventListener('click', () => this.showGallery());
+        this.mirrorBtn.addEventListener('click', () => this.toggleMirror());
         document.getElementById('retakeBtn').addEventListener('click', () => this.retakePhoto());
         document.getElementById('saveBtn').addEventListener('click', () => this.savePhoto());
         document.getElementById('shareBtn').addEventListener('click', () => this.sharePhoto());
         document.getElementById('closeGalleryBtn').addEventListener('click', () => this.hideGallery());
     }
     
+    toggleMirror() {
+        this.isMirrored = !this.isMirrored;
+        this.applyMirrorEffect();
+        this.mirrorBtn.classList.toggle('active');
+        this.mirrorBtn.textContent = this.isMirrored ? '🪞 Mirror ON' : '🪞 Mirror OFF';
+    }
+    
     async capturePhoto() {
         try {
+            this.cameraStatus.textContent = '📸 Capturing...';
+            this.cameraStatus.style.color = '#ff9800';
+            
             // Create canvas and capture image
             const canvas = document.createElement('canvas');
             canvas.width = this.video.videoWidth;
             canvas.height = this.video.videoHeight;
             const ctx = canvas.getContext('2d');
             
-            // Flip image for mirror effect
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
+            // Apply mirror effect if enabled
+            if (this.isMirrored) {
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+            }
+            
             ctx.drawImage(this.video, 0, 0, canvas.width, canvas.height);
             
             // Convert to blob
@@ -92,8 +123,13 @@ class TatinePhotobooth {
             this.gallerySection.style.display = 'none';
             this.captureBtn.style.display = 'none';
             
+            this.cameraStatus.textContent = '✅ Photo captured!';
+            this.cameraStatus.style.color = '#4caf50';
+            
         } catch (error) {
             console.error('Error capturing photo:', error);
+            this.cameraStatus.textContent = '❌ Failed to capture photo';
+            this.cameraStatus.style.color = '#f44336';
             alert('Failed to capture photo. Please try again.');
         }
     }
@@ -114,8 +150,6 @@ class TatinePhotobooth {
             
             const data = await response.json();
             console.log('Photo saved:', data);
-            
-            // Store URL for later use
             this.currentPhotoUrl = data.photo_url;
             
         } catch (error) {
@@ -125,8 +159,12 @@ class TatinePhotobooth {
     }
     
     async switchCamera() {
+        this.cameraStatus.textContent = '🔄 Switching camera...';
+        this.cameraStatus.style.color = '#ff9800';
         this.usingFrontCamera = !this.usingFrontCamera;
         await this.startCamera();
+        this.cameraStatus.textContent = '✅ Camera switched!';
+        this.cameraStatus.style.color = '#4caf50';
     }
     
     retakePhoto() {
@@ -134,6 +172,8 @@ class TatinePhotobooth {
         this.captureBtn.style.display = 'flex';
         this.currentPhoto = null;
         this.currentPhotoUrl = null;
+        this.cameraStatus.textContent = '📷 Ready for new photo';
+        this.cameraStatus.style.color = '#4caf50';
     }
     
     async savePhoto() {
@@ -154,6 +194,9 @@ class TatinePhotobooth {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            
+            this.cameraStatus.textContent = '💾 Photo saved!';
+            this.cameraStatus.style.color = '#4caf50';
         } catch (error) {
             console.error('Error saving photo:', error);
             alert('Failed to save photo. Please try again.');
@@ -176,12 +219,15 @@ class TatinePhotobooth {
                     text: 'Look at this cute photo from Tatine Photobooth! 📸',
                     files: [new File([blob], 'tatine-photo.jpg', { type: 'image/jpeg' })]
                 });
+                this.cameraStatus.textContent = '📤 Photo shared!';
             } else {
                 // Fallback: copy link
                 const url = window.location.origin + this.currentPhotoUrl;
                 await navigator.clipboard.writeText(url);
                 alert('Photo link copied to clipboard! You can share it with your friends.');
+                this.cameraStatus.textContent = '📋 Link copied!';
             }
+            this.cameraStatus.style.color = '#4caf50';
         } catch (error) {
             if (error.name !== 'AbortError') {
                 console.error('Error sharing photo:', error);
@@ -210,32 +256,44 @@ class TatinePhotobooth {
         this.galleryGrid.innerHTML = '';
         
         if (photos.length === 0) {
-            this.galleryGrid.innerHTML = '<p style="text-align: center; color: #ad1457;">No photos yet! Take your first photo! 📸</p>';
+            this.galleryGrid.innerHTML = '<p style="text-align: center; color: #ad1457; padding: 20px;">No photos yet! Take your first photo! 📸</p>';
             return;
         }
         
         photos.forEach(photo => {
+            const container = document.createElement('div');
+            container.style.position = 'relative';
+            container.style.margin = '5px';
+            
             const img = document.createElement('img');
             img.src = photo.url;
             img.alt = photo.filename;
             img.title = new Date(photo.created).toLocaleString();
+            img.style.width = '100%';
+            img.style.aspectRatio = '1';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '10px';
+            img.style.cursor = 'pointer';
             
-            // Add delete button overlay
-            const container = document.createElement('div');
-            container.style.position = 'relative';
+            // Click to view full size
+            img.onclick = () => {
+                window.open(photo.url, '_blank');
+            };
             
+            // Delete button
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = '✖';
             deleteBtn.style.position = 'absolute';
             deleteBtn.style.top = '5px';
             deleteBtn.style.right = '5px';
-            deleteBtn.style.background = 'rgba(233, 30, 99, 0.8)';
+            deleteBtn.style.background = 'rgba(233, 30, 99, 0.9)';
             deleteBtn.style.color = 'white';
             deleteBtn.style.border = 'none';
             deleteBtn.style.borderRadius = '50%';
-            deleteBtn.style.width = '25px';
-            deleteBtn.style.height = '25px';
+            deleteBtn.style.width = '30px';
+            deleteBtn.style.height = '30px';
             deleteBtn.style.cursor = 'pointer';
+            deleteBtn.style.fontSize = '14px';
             deleteBtn.onclick = async (e) => {
                 e.stopPropagation();
                 if (confirm('Delete this photo?')) {
