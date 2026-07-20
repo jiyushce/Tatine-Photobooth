@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cupcake">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 Pastel PhotoBooth 🌸</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-base-200 min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="card bg-base-100 shadow-xl max-w-md w-full border-4 border-primary/20">
+        <div class="card-body items-center text-center">
+            <h2 class="card-title text-2xl text-primary font-bold mb-4">✨ Smile & Sparkle ✨</h2>
+            
+            <!-- Webcam Stream Box -->
+            <div class="relative rounded-2xl overflow-hidden border-4 border-secondary shadow-inner bg-black aspect-video w-full">
+                <video id="webcam" autoplay playsinline class="w-full h-full object-cover scale-x-[-1]"></video>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="card-actions justify-center mt-6 w-full">
+                <button id="capture-btn" class="btn btn-primary btn-wide rounded-full text-white font-bold shadow-md">📸 Take Photo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Canvas for capturing image data -->
+    <canvas id="canvas" class="hidden"></canvas>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
