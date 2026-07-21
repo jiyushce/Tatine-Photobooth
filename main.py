@@ -8,15 +8,7 @@ from datetime import datetime
 import shutil
 from pathlib import Path
 
-# Try importing PIL with error handling
-try:
-    from PIL import Image, ImageDraw
-    PIL_AVAILABLE = True
-except ImportError:
-    PIL_AVAILABLE = False
-    print("PIL not installed. Photo effects will be disabled.")
-
-app = FastAPI(title="Tatine Photobooth")
+app = FastAPI(title="Miffy Photobooth")
 
 # Configure CORS
 app.add_middleware(
@@ -52,13 +44,6 @@ async def capture_photo(file: UploadFile = File(...)):
         with open(filepath, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         
-        # Add cute overlay effects if PIL is available
-        if PIL_AVAILABLE:
-            try:
-                add_cute_overlay(str(filepath))
-            except Exception as e:
-                print(f"Error adding overlay: {e}")
-        
         # Return the photo URL
         photo_url = f"/photos/{filename}"
         return JSONResponse({
@@ -69,33 +54,6 @@ async def capture_photo(file: UploadFile = File(...)):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-def add_cute_overlay(image_path):
-    """Add cute overlays to the photo"""
-    try:
-        img = Image.open(image_path)
-        draw = ImageDraw.Draw(img)
-        
-        # Add a cute border
-        border_color = "#FFB6C1"
-        border_width = 20
-        draw.rectangle(
-            [(0, 0), (img.width, img.height)],
-            outline=border_color,
-            width=border_width
-        )
-        
-        # Add cute corner decorations
-        corner_radius = 50
-        for x, y in [(0, 0), (img.width, 0), (0, img.height), (img.width, img.height)]:
-            draw.arc(
-                [x, y, x + corner_radius * 2, y + corner_radius * 2],
-                start=0, end=90, fill="#FF69B4", width=10
-            )
-        
-        img.save(image_path, quality=95)
-    except Exception as e:
-        print(f"Error adding overlay: {e}")
 
 @app.get("/photos")
 async def list_photos():
